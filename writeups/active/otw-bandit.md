@@ -718,7 +718,7 @@ This program will connect to the given port on localhost using TCP. If it receiv
 
 This program will firstly connect to a specific port on the localhost, and then it will receive some sort of data. If the data is the `bandit20` password, then it will transmit the `bandit21` password back.
 
-Here, we need two sessions: one to run `suconnect`, and one to be listening for connections with `nc`. We can do this be using `screen`. You can read about `screen` usage by consulting its `man` page if you don't know how to split screens, jump terminals, or start new shells.
+Here, we need two sessions: one to run `suconnect`, and one to be listening for connections with `nc`. We can do this by using `screen`. You can read about `screen` usage by consulting its `man` page if you don't know how to split screens, jump terminals, or start new shells.
 
 On one of our terminals, we will listen for connections on an arbitrary port using `nc` with the `-l -p` (listen, port) flags and giving a valid port as an argument. Additionally, we want to transmit to all connections the password for `bandit20`, which we can do using the `<` feed operator.
 
@@ -777,7 +777,7 @@ Just as a sidenote, most systems are shifting away from cron in favor of systemd
 
 ## Level 22 -> 23
 
-This level starts out similar to the previous one. There's a cron job that's being run periodically. Let's find it, see what script its running, and then read the code in the script.
+This level starts out similar to the previous one. There's a cron job that's being run periodically. Let's find it, see what script it's running, and then read the code in the script.
 
 ```
 bandit22@bandit:~$ ls /etc/cron.d/
@@ -796,7 +796,7 @@ echo "Copying passwordfile /etc/bandit_pass/$myname to /tmp/$mytarget"
 cat /etc/bandit_pass/$myname > /tmp/$mytarget
 ```
 
-Based on the cron job, we could see that this is being run as the user `bandit23`. As such, the `myname` variable inside of the shell script is equal to `bandit23`. Therefore, `mytarget` seems to be the MD5 hash generated from the string echoed in the script. We can simply just run this code in our terminal to see the output.
+Based on the cron job, we can see that this is being run as the user `bandit23`. As such, the `myname` variable inside of the shell script is equal to `bandit23`. Therefore, `mytarget` seems to be the MD5 hash generated from the string echoed in the script. We can simply just run this code in our terminal to see the output.
 
 ```
 bandit22@bandit:~$ echo I am user bandit23 | md5sum | cut -d ' ' -f 1
@@ -842,7 +842,7 @@ done
 
 ```
 
-Here, we are dealing with a much more complex script. However, all that we need to know about it is very simply clarified in the string: "Executing and deleting all scripts in `/var/spool/$myname`". Because this cron job is being run as the user `bandit24`, this means that it is executing and then deleting all scripts in `/var/spool/bandit24/`.
+Here, we are dealing with a much more complex script. Its functionality is summarized in the echo message: "Executing and deleting all scripts in `/var/spool/$myname`". Because this cron job is being run as the user `bandit24`, this means that it is executing and then deleting all scripts in `/var/spool/bandit24/`.
 
 We're going to make a very simple script that writes the contents of `/etc/bandit_pass/bandit24` to a arbitrarily named file in `/tmp`, from which we can then read and get the contents.
 
@@ -966,7 +966,7 @@ And just like that, we now have a shell!
 
 ## Level 26 -> 27
 
-This looks like another repeat of a level we did earlier where we were given a binary program that executes commands as another user. We will use the program to spawn a shell as the user and then we can proceed from there. Again, this is a repeat of an earlier level.
+This looks like a repeat of a level we did earlier where we were given a binary program that executes commands as another user. We will use the program to spawn a shell as the user and then we can proceed from there. Again, this is a repeat of an earlier level.
 
 ```
 bandit26@bandit:~$ ./bandit27-do 
@@ -981,7 +981,7 @@ $ cat /etc/bandit_pass/bandit27
 
 ## Level 27 -> 28
 
-It looks like we're going to start interacting with git! Let's go ahead and clone the repository located at `ssh://bandit27-git@localhost/home/bandit27-git/repo` with the `git` utility. Remember that the git password is the same as the user password.
+It looks like we're going to start interacting with git! Let's go ahead and clone the repository located at `ssh://bandit27-git@localhost/home/bandit27-git/repo` with the `git` utility. Remember that the git password is the same as the user password in this level.
 
 ```
 bandit27@bandit:/tmp/tmp.2Jr4dMwzol$ git clone ssh://bandit27-git@localhost/home/bandit27-git/repo
@@ -998,6 +998,8 @@ README
 bandit27@bandit:/tmp/tmp.2Jr4dMwzol/repo$ cat README 
 The password to the next level is: 0ef186ac70e04ea33b4c1853d2526fa2
 ```
+
+As a sidenote, the next few levels all have to do with git. I recommend you reading up on git before proceeding or else you'll get lost. Check [this](https://try.github.io/) out.
 
 ## Level 28 -> 29
 
@@ -1120,3 +1122,157 @@ Some notes for bandit30 of bandit.
 - password: 5b90576bedb2cc04c86a9e924ce42faf
 
 ```
+
+## Level 30 -> 31
+
+This is yet another git challenge.
+
+```
+bandit30@bandit:~$ cd $(mktemp -d)
+bandit30@bandit:/tmp/tmp.dvJtk8lxZo$ git clone ssh://bandit30-git@localhost/home/bandit30-git/repo
+bandit30@bandit:/tmp/tmp.dvJtk8lxZo$ cd repo/
+bandit30@bandit:/tmp/tmp.dvJtk8lxZo/repo$ ls
+README.md
+bandit30@bandit:/tmp/tmp.dvJtk8lxZo/repo$ cat README.md 
+just an epmty file... muahaha
+```
+
+If we try any of our tactics from the previous levels, we will see that they'll only be in vain.
+
+```
+bandit30@bandit:/tmp/tmp.dvJtk8lxZo/repo$ git log
+commit 3aefa229469b7ba1cc08203e5d8fa299354c496b
+Author: Ben Dover <noone@overthewire.org>
+Date:   Thu May 7 20:14:54 2020 +0200
+
+    initial commit of README.md
+bandit30@bandit:/tmp/tmp.dvJtk8lxZo/repo$ git branch -a
+* master
+  remotes/origin/HEAD -> origin/master
+  remotes/origin/master
+```
+
+The answer to this level is neither in the branches nor the logs, but actually in the tags. If we list all tags, we can see that there's a secret tag.
+
+```
+bandit30@bandit:/tmp/tmp.dvJtk8lxZo/repo$ git tag
+secret
+```
+
+Let's go ahead and show this secret now.
+
+```
+bandit30@bandit:/tmp/tmp.dvJtk8lxZo/repo$ git show secret
+47e603bb428404d265f59c42920d81e5
+```
+
+## Level 31 -> 32
+
+You guessed it, yet another git problem. I'm starting to get really bored of these. Luckily, this is the last git problem.
+
+```
+bandit31@bandit:~$ ls
+bandit31@bandit:~$ cd $(mktemp -d)
+bandit31@bandit:/tmp/tmp.0RMRUd7BW3$ git clone ssh://bandit31-git@localhost/home/bandit31-git/repo
+bandit31@bandit:/tmp/tmp.0RMRUd7BW3/repo$ ls
+README.md
+bandit31@bandit:/tmp/tmp.0RMRUd7BW3/repo$ cat README.md 
+This time your task is to push a file to the remote repository.
+
+Details:
+    File name: key.txt
+    Content: 'May I come in?'
+    Branch: master
+
+```
+
+It looks like this level is going to be testing our ability to push changes. If you work with git, this is something that you're probably very familiar with by now. First, we'll create  the file that will be pushed.
+
+```
+bandit31@bandit:/tmp/tmp.0RMRUd7BW3/repo$ echo "May I come in?" > key.txt
+```
+
+Then we'll add and commit it.
+
+```
+bandit31@bandit:/tmp/tmp.0RMRUd7BW3/repo$ git add -f key.txt
+bandit31@bandit:/tmp/tmp.0RMRUd7BW3/repo$ git commit -m "Added key.txt."
+[master 59e2100] Added key.txt.
+ 1 file changed, 1 insertion(+)
+ create mode 100644 key.txt
+```
+
+Now all that's left is to push it.
+
+```
+bandit31@bandit:/tmp/tmp.0RMRUd7BW3/repo$ git push
+Could not create directory '/home/bandit31/.ssh'.
+The authenticity of host 'localhost (127.0.0.1)' can't be established.
+ECDSA key fingerprint is SHA256:98UL0ZWr85496EtCRkKlo20X3OPnyPSB5tB5RPbhczc.
+Are you sure you want to continue connecting (yes/no)? yes
+Failed to add the host to the list of known hosts (/home/bandit31/.ssh/known_hosts).
+This is a OverTheWire game server. More information on http://www.overthewire.org/wargames
+
+bandit31-git@localhost's password: 
+Counting objects: 3, done.
+Delta compression using up to 2 threads.
+Compressing objects: 100% (2/2), done.
+Writing objects: 100% (3/3), 323 bytes | 0 bytes/s, done.
+Total 3 (delta 0), reused 0 (delta 0)
+remote: ### Attempting to validate files... ####
+remote: 
+remote: .oOo.oOo.oOo.oOo.oOo.oOo.oOo.oOo.oOo.oOo.
+remote: 
+remote: Well done! Here is the password for the next level:
+remote: 56a9bf19c63d650ce78e6ec0354ee45e
+remote: 
+remote: .oOo.oOo.oOo.oOo.oOo.oOo.oOo.oOo.oOo.oOo.
+remote: 
+To ssh://localhost/home/bandit31-git/repo
+ ! [remote rejected] master -> master (pre-receive hook declined)
+error: failed to push some refs to 'ssh://bandit31-git@localhost/home/bandit31-git/repo'
+```
+
+We're finally done with all of the git stuff. Now, onto the last level!
+
+## Level 32 -> 33
+
+This last and final level is a jail escape. We're dropped into an uppercase shell. I love these kinds of challenges a lot. No matter what we type, our command gets translated into uppercase. This means that most things that we want to do, we can't due to the case sensitive nature of the shell.
+
+```
+>> whoami
+sh: 1: WHOAMI: not found
+>> printenv
+sh: 1: PRINTENV: not found
+>> sh
+sh: 1: SH: not found
+>> /bin/sh
+sh: 1: /BIN/SH: not found
+```
+
+Let's see if we can find out what files are in our current directory by running `./*`, which is something that we've used before. Notice how there are zero characters that could be turned into uppercase in this string.
+
+```
+>> ./*
+WELCOME TO THE UPPERCASE SHELL
+```
+
+Well, that didn't help out much. Let's speculate about how this shell works. Based off of the error messages we get whenever we enter a command, we can see that it is executing `sh`. The shell's actual code, although we can't read it, might look something like.
+
+```
+sh -c "$OUR_UPPERCASE_COMMAND"
+```
+
+On a Linux system, `$0` is a special variable that typically denotes our shell. In addition, it doesn't contain any characters that might turn into uppercase. As such, we can try to run `$0` to invoke the shell (again).
+
+```
+>> $0
+$ echo $0
+sh
+$ whoami
+bandit33
+$ cat /etc/bandit_pass/bandit33
+c9c3199ddf4121b10cf581a98d51caee
+```
+
+And just like that, we've completed the Bandit series!
