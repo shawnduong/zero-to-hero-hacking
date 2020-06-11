@@ -41,6 +41,8 @@ As a beginner, it's very easy to get intimidated! Remember that many of us in th
 
 My name is Shawn Duong and I actively maintain this project. I've been hacking since 2015 and capturing flags since 2017. In 2018 I founded Team IrisCS and in 2020 I joined ACM UC Merced's premier CTF team. I'm a student at the University of California, Merced majoring in Computer Science and Engineering and currently employed by the UC's IT Network and Extension departments. I am expected to receive my Bachelor of Science by 2023. My specializations are digital forensics and systems exploitation.
 
+I am reachable via GitHub for regular correspondences or via email for urgent correspondences. Both of these can be found [here](https://github.com/shawnduong). I will typically respond within 7 days at most, often times much earlier. **Any and all concerns related to this project should first and foremost consider being filed as an issue.**
+
 ## About Contributing
 
 There are a variety of ways that you can contribute to this project. If you would like to write articles, submit proofreads and/or revisions, or contribute in some other direct manner, please follow this [guide](https://akrabat.com/the-beginners-guide-to-contributing-to-a-github-project/). If you would like to contribute indirectly by notifying me of proofreads, outdated methods and techniques, broken links, etc. then please submit an issue and it will be resolved.
