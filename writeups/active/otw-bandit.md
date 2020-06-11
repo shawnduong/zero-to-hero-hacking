@@ -95,7 +95,7 @@ UmHadQclWmgdLOKQ3YNgjWxGoRMb5luK
 
 ## Level 3 -> 4
 
-The password for the next level is located in the `inhere/` directory inside of a hidden file. First, we want to `ls` all files in the current directory to make sure that `inhere/` exists, and then we'll `cd` (change directory) into the it and try to `ls` for the file containing the password.
+The password for the next level is located in the `inhere/` directory inside of a hidden file. First, we want to `ls` all files in the current directory to make sure that `inhere/` exists, and then we'll `cd` (change directory) into it and try to `ls` for the file containing the password.
 
 ```
 bandit3@bandit:~$ ls
@@ -119,7 +119,7 @@ The password for the next file is described as being the only human-readable fil
 
 Human-readable is exactly what it sounds like: data that can be easily interpreted by a person. This includes things like text files encoded in ASCII, or configuration files, or source code. What this doesn't include are raw data files such as binary programs, images, or the like. If we try to `cat` a non-human-readable file, the program will try its best to interpret the data and display it to us but it often times results in a huge mess that we can't understand.
 
-In order to find out whether a file is human-readable or not, we can use the `file` command to find out what sort of data it holds. This is typically done by comparing the file's signature or magic bytes against a database of known signatures or magic bytes in order to identify its file format, if any is identifiable to begin with.
+In order to find out whether a file is human-readable or not, we can use the `file` command to find out what sort of data it holds. This is typically done by comparing the file's signature or magic bytes against a database of known signatures or magic bytes in order to identify its file format, if any format is identifiable to begin with.
 
 Let's now `cd` into the `inhere/` directory and run `file` on all the files inside of it to see which ones are human-readable.
 
@@ -183,7 +183,7 @@ $ man find
 
 This level's description specifies that the password file is somewhere on the server, is owned by the user `bandit7`, is owned by the group `bandit6`, and is 33 bytes in size. This is similar to the previous challenge in that we're using the `find` utility again, but it's different in that we're no longer restricted to just our home directory!
 
-On a Linux system `/` denotes the **root directory**. This is the uppermost directory on a system, from which all other directories are branching from. When we use the `find` command, this will be our new starting point. We will be using `-size` again, and we will also be using `-user` and `-group`. Again, you can learn more about how to use a utility by consulting its manual page.
+On a Linux system, `/` denotes the **root directory**. This is the uppermost directory on a system, from which all other directories are branching from. When we use the `find` command, this will be our new starting point. We will be using `-size` again, and we will also be using `-user` and `-group`. Again, you can learn more about how to use a utility by consulting its manual page.
 
 ```
 bandit6@bandit:~$ find / -user bandit7 -group bandit6 -size 33c
@@ -266,4 +266,443 @@ The password is IFukwKGsFW8MOq3IRFqrxE1hxTNEbUPR
 
 ## Level 11 -> 12
 
+This one is a fun level. The password for the next level is stored in `data.txt`, but all characters have been shifted 13 spaces! This is a very simple and classic cipher known as a rot13 (rotate 13) cipher. We can see the ciphertext if we `cat` the file.
 
+```
+bandit11@bandit:~$ cat data.txt 
+Gur cnffjbeq vf 5Gr8L4qetPEsPk8htqjhRK8XSP6x2RHh
+```
+
+The easy way to solve this problem is to just copy and paste the ciphertext into an online rot13 deciphering tool, but we're going to do it the not-so-easy way to learn about a great tool called `tr` (translate).
+
+In a rot13 cipher, the alphabet is split in half due to the fact that the alphabet is 26 characters in length. A becomes N, B becomes O, C becomes P, and so on and so forth. We can think of this as one set of characters becoming two sets of characters, so `[A-Z]` becomes `[A-M]` and `[N-Z]`. Then to apply the rotation to each character, we can use the fact that the alphabet evenly divides into two, 13-character halves and just swap the halves `[A-M]` and `[N-Z]` to become `[N-Z]` and `[A-M]` while keeping the original set of characters `[A-Z]` original. In other words, we are *translating* all `[A-Z]` to become `[N-Z]` and `[A-M]` in that order. We can do this using the `tr` tool. However, we also need to remember to do this for the lowercase counterparts of these characters, so we will include an additional set `[a-z]` that becomes `[n-z]` and `[a-m]` in that order.
+
+When using `tr`, we can simply just group and join each set together, so all "to be translated" sets can be expressed as just `[A-Za-z]` and all "to translate into" sets can be expressed as just `[N-ZM-Zn-zm-z]`. In addition, we will once again use the feed operator `<` to feed the contents of `data.txt` as an input to the `tr` utility.
+
+```
+bandit11@bandit:~$ tr '[A-Za-z]' '[N-ZA-Mn-za-m]' < data.txt 
+The password is 5Te8Y4drgCRfCx8ugdwuEX8KFC6k2EUu
+```
+
+## Level 12 -> 13
+
+In this level, we're going to get some practice learning how to decompress multiple types of compressions using multiple tools typically present on a \*NIX system. As the level description puts it, we have a hexdump of a file that has been repeatedly compressed. The first step we have to take is to undo the hexdump into its original binary counterpart, and then begin decompression operations.
+
+We will likely want to be creating a temporary directory for this so that we can work inside of it. One of my favorite utilities is `mktemp`, which can create a temporary directory inside of `/tmp/` if you supply the `-d` (directory) flag. In addition, we can `cd` into the newly created temporary directory in one swift move by using an inline command. That is to say that because `mktemp -d` will print out the name of the newly generated temporary directory, and because `cd` takes a positional argument specifying which directory we would like to change into, we can have these two work in one elegant conjunction by encapsulating `mktemp -d` in `$()` inline with `cd` to denote a direct "drop-in."
+
+```
+bandit12@bandit:~$ cd $(mktemp -d)
+bandit12@bandit:/tmp/tmp.NCXhmDUDrJ$
+```
+
+Beautiful. Now let's copy the contents of our home directory into our current working directory. We can do this using `~`, which is short for "my home directory." If we use this in conjunction with the `*` wildcard that we've seen before, then we can form `~/*` to mean "from my home directory, I want to talk about everything." We can copy it into our current working directory (`.`) using `cp` (copy).
+
+```
+bandit12@bandit:/tmp/tmp.NCXhmDUDrJ$ cp ~/* .
+bandit12@bandit:/tmp/tmp.NCXhmDUDrJ$ ls
+data.txt
+```
+
+If we `cat` the file, then we can clearly see what the level description meant when it said that the file in question is a hexdump at the outermost layer.
+
+```
+bandit12@bandit:/tmp/tmp.NCXhmDUDrJ$ cat data.txt 
+00000000: 1f8b 0808 0650 b45e 0203 6461 7461 322e  .....P.^..data2.
+00000010: 6269 6e00 013d 02c2 fd42 5a68 3931 4159  bin..=...BZh91AY
+00000020: 2653 598e 4f1c c800 001e 7fff fbf9 7fda  &SY.O...........
+00000030: 9e7f 4f76 9fcf fe7d 3fff f67d abde 5e9f  ..Ov...}?..}..^.
+00000040: f3fe 9fbf f6f1 feee bfdf a3ff b001 3b1b  ..............;.
+00000050: 5481 a1a0 1ea0 1a34 d0d0 001a 68d3 4683  T......4....h.F.
+00000060: 4680 0680 0034 1918 4c4d 190c 4000 0001  F....4..LM..@...
+00000070: a000 c87a 81a3 464d a8d3 43c5 1068 0346  ...z..FM..C..h.F
+00000080: 8343 40d0 3400 0340 66a6 8068 0cd4 f500  .C@.4..@f..h....
+00000090: 69ea 6800 0f50 68f2 4d00 680d 06ca 0190  i.h..Ph.M.h.....
+000000a0: 0000 69a1 a1a0 1ea0 194d 340d 1ea1 b280  ..i......M4.....
+000000b0: f500 3406 2340 034d 3400 0000 3403 d400  ..4.#@.M4...4...
+000000c0: 1a07 a832 3400 f51a 0003 43d4 0068 0d34  ...24.....C..h.4
+000000d0: 6868 f51a 3d43 2580 3e58 061a 2c89 6bf3  hh..=C%.>X..,.k.
+000000e0: 0163 08ab dc31 91cd 1747 599b e401 0b06  .c...1...GY.....
+000000f0: a8b1 7255 a3b2 9cf9 75cc f106 941b 347a  ..rU....u.....4z
+00000100: d616 55cc 2ef2 9d46 e7d1 3050 b5fb 76eb  ..U....F..0P..v.
+00000110: 01f8 60c1 2201 33f0 0de0 4aa6 ec8c 914f  ..`.".3...J....O
+00000120: cf8a aed5 7b52 4270 8d51 6978 c159 8b5a  ....{RBp.Qix.Y.Z
+00000130: 2164 fb1f c26a 8d28 b414 e690 bfdd b3e1  !d...j.(........
+00000140: f414 2f9e d041 c523 b641 ac08 0c0b 06f5  ../..A.#.A......
+00000150: dd64 b862 1158 3f9e 897a 8cae 32b0 1fb7  .d.b.X?..z..2...
+00000160: 3c82 af41 20fd 6e7d 0a35 2833 41bd de0c  <..A .n}.5(3A...
+00000170: 774f ae52 a1ac 0fb2 8c36 ef58 537b f30a  wO.R.....6.XS{..
+00000180: 1510 cab5 cb51 4231 95a4 d045 b95c ea09  .....QB1...E.\..
+00000190: 9fa0 4d33 ba43 22c9 b5be d0ea eeb7 ec85  ..M3.C".........
+000001a0: 59fc 8bf1 97a0 87a5 0df0 7acd d555 fc11  Y.........z..U..
+000001b0: 223f fdc6 2be3 e809 c974 271a 920e acbc  "?..+....t'.....
+000001c0: 0de1 f1a6 393f 4cf5 50eb 7942 86c3 3d7a  ....9?L.P.yB..=z
+000001d0: fe6d 173f a84c bb4e 742a fc37 7b71 508a  .m.?.L.Nt*.7{qP.
+000001e0: a2cc 9cf1 2522 8a77 39f2 716d 34f9 8620  ....%".w9.qm4.. 
+000001f0: 4e33 ca36 eec0 cd4b b3e8 48e4 8b91 5bea  N3.6...K..H...[.
+00000200: 01bf 7d21 0b64 82c0 3341 3424 e98b 4d7e  ..}!.d..3A4$..M~
+00000210: c95c 1b1f cac9 a04a 1988 43b2 6b55 c6a6  .\.....J..C.kU..
+00000220: 075c 1eb4 8ecf 5cdf 4653 064e 84da 263d  .\....\.FS.N..&=
+00000230: b15b bcea 7109 5c29 c524 3afc d715 4894  .[..q.\).$:...H.
+00000240: 7426 072f fc28 ab05 9603 b3fc 5dc9 14e1  t&./.(......]...
+00000250: 4242 393c 7320 98f7 681d 3d02 0000       BB9<s ..h.=...
+```
+
+In order to reverse this hexdump which looks like it was created using the `xxd` utility, we can again just use `xxd` with a `-r` (reverse) flag to do a reverse operation. This gives us the raw binary that it originally encoded. By default, it will try to send all of this data to the standard output. We want to instead redirect its output bytes into a file that we can then analyze. We can do this using the `>` redirection operator.
+
+```
+bandit12@bandit:/tmp/tmp.NCXhmDUDrJ$ xxd -r data.txt > data_unhexdump
+bandit12@bandit:/tmp/tmp.NCXhmDUDrJ$ file data_unhexdump 
+data_unhexdump: gzip compressed data, was "data2.bin", last modified: Thu May  7 18:14:30 2020, max compression, from Unix
+```
+
+We can clearly see that the output data is of the type gzip. We can decompress it using `gunzip` (g-unzip). However, we first need to give it a `.gz` extension so that `gunzip` will accept its format. We can rename files using `mv` (move).
+
+```
+bandit12@bandit:/tmp/tmp.NCXhmDUDrJ$ mv data_unhexdump data_unhexdump.gz
+bandit12@bandit:/tmp/tmp.NCXhmDUDrJ$ gunzip data_unhexdump.gz 
+bandit12@bandit:/tmp/tmp.NCXhmDUDrJ$ ls
+data.txt  data_unhexdump
+bandit12@bandit:/tmp/tmp.NCXhmDUDrJ$ file data_unhexdump 
+data_unhexdump: bzip2 compressed data, block size = 900k
+```
+
+Now we have bzip2 data. We can decompress it using the `bzip2` utility with the `-d` (decompress) flag.
+
+```
+bandit12@bandit:/tmp/tmp.NCXhmDUDrJ$ bzip2 -d data_unhexdump
+bzip2: Can't guess original name for data_unhexdump -- using data_unhexdump.out
+bandit12@bandit:/tmp/tmp.NCXhmDUDrJ$ file data_unhexdump.out
+data_unhexdump.out: gzip compressed data, was "data4.bin", last modified: Thu May  7 18:14:30 2020, max compression, from Unix
+```
+
+We once again have gzip data. Same thing as before.
+
+```
+bandit12@bandit:/tmp/tmp.NCXhmDUDrJ$ mv data_unhexdump.out data_unhexdump.out.gz
+bandit12@bandit:/tmp/tmp.NCXhmDUDrJ$ gunzip data_unhexdump.out.gz 
+bandit12@bandit:/tmp/tmp.NCXhmDUDrJ$ file data_unhexdump.out 
+data_unhexdump.out: POSIX tar archive (GNU)
+```
+
+Now we have a tar archive. We can use `tar` with the `xf` (extract files) argument to extract a tar archive.
+
+```
+bandit12@bandit:/tmp/tmp.NCXhmDUDrJ$ tar xf data_unhexdump.out
+bandit12@bandit:/tmp/tmp.NCXhmDUDrJ$ ls
+data5.bin  data.txt  data_unhexdump.out
+bandit12@bandit:/tmp/tmp.NCXhmDUDrJ$ file data5.bin
+data5.bin: POSIX tar archive (GNU)
+```
+
+Another tar archive. Same thing.
+
+```
+bandit12@bandit:/tmp/tmp.NCXhmDUDrJ$ tar xf data5.bin
+bandit12@bandit:/tmp/tmp.NCXhmDUDrJ$ ls
+data5.bin  data6.bin  data.txt  data_unhexdump.out
+bandit12@bandit:/tmp/tmp.NCXhmDUDrJ$ file data6.bin
+data6.bin: bzip2 compressed data, block size = 900k
+```
+
+Another bzip2. Same thing.
+
+```
+bandit12@bandit:/tmp/tmp.NCXhmDUDrJ$ bzip2 -d data6.bin
+bzip2: Can't guess original name for data6.bin -- using data6.bin.out
+bandit12@bandit:/tmp/tmp.NCXhmDUDrJ$ file data6.bin.out
+data6.bin.out: POSIX tar archive (GNU)
+```
+
+Another tar. Hopefully you're starting to get the hang of this by now.
+
+```
+bandit12@bandit:/tmp/tmp.NCXhmDUDrJ$ tar xf data6.bin.out
+bandit12@bandit:/tmp/tmp.NCXhmDUDrJ$ ls
+data5.bin  data6.bin.out  data8.bin  data.txt  data_unhexdump.out
+bandit12@bandit:/tmp/tmp.NCXhmDUDrJ$ file data8.bin 
+data8.bin: gzip compressed data, was "data9.bin", last modified: Thu May  7 18:14:30 2020, max compression, from Unix
+```
+
+You guessed it: gzip. 
+
+```
+bandit12@bandit:/tmp/tmp.NCXhmDUDrJ$ mv data8.bin data8.bin.gz
+bandit12@bandit:/tmp/tmp.NCXhmDUDrJ$ gunzip data8.bin.gz 
+bandit12@bandit:/tmp/tmp.NCXhmDUDrJ$ file data8.bin
+data8.bin: ASCII text
+```
+
+At last, we arrive at ASCII text!
+
+```
+bandit12@bandit:/tmp/tmp.NCXhmDUDrJ$ cat data8.bin 
+The password is 8ZjyCRiBWFYkneahHwxCv3wb2a1ORpYL
+```
+
+## Level 13 -> 14
+
+We're told that the password for `bandit14` is located in `/etc/bandit_pass/bandit14` and can only be read by the user `bandit14`. However, that's no problem for us because we're given the SSH key for the user `bandit14`. We can simply just use the key to log into the account instead of entering in a password. We can do this using the `-i` (identity file) flag.
+
+```
+bandit13@bandit:~$ ls
+sshkey.private
+bandit13@bandit:~$ file sshkey.private 
+sshkey.private: PEM RSA private key
+bandit13@bandit:~$ ssh -i sshkey.private bandit14@127.0.0.1
+```
+
+Just for good measure, let's also grab the password once we're logged in.
+
+```
+bandit14@bandit:~$ cat /etc/bandit_pass/bandit14
+4wcYUJFw0k0XLShlDzztnTBHiqxU3b3e
+```
+
+## Level 14 -> 15
+
+In order to get the password for the next level, we need to submit the current level's password to the service running on port 30000 on localhost. We can do this using `nc` (netcat), a very common networking utility. In order to connect to the service running on port 30000 on localhost (remember that localhost is `127.0.0.1`), we can just use the following command:
+
+```
+bandit14@bandit:~$ nc 127.0.0.1 30000
+```
+
+Afterwards, we can just copy and paste in the password and send it by hitting ENTER.
+
+Alternatively, you can feed the contents of `/etc/bandit_pass/bandit14` directly into `nc` using something that should be familiar to us by now.
+
+```
+bandit14@bandit:~$ nc 127.0.0.1 30000 < /etc/bandit_pass/bandit14
+Correct!
+BfMYroe26WYalil77FoDi9qh59eK5xNr
+```
+
+## Level 15 -> 16
+
+This level is similar, except now the service is located on port 30001 and is using SSL encryption. SSL (secure sockets layer) is a security standard that will require us to use some sort of SSL client now instead of `nc` like we did before.
+
+We can use `openssl` for this. After reading the manual pages for `openssl`, it becomes apparent that we need to use `s_client` in order to create a generic SSL/TLS connection to a remote host also using SSL/TLS. The manual page for `s_client` specify that we can connect to a remote host using `-connect host:port`. We will also use `-ign_eof` to ignore the EOF (end of file) to prevent getting messages such as "HEARTBEATING" and "Read R BLOCK" that are related to the protocol.
+
+```
+bandit15@bandit:~$ openssl s_client -connect 127.0.0.1:30001 -ign_eof < /etc/bandit_pass/bandit15
+-- snipped, a bunch of data --
+Correct!
+cluFn7wTiGryunymYOu4RcffSxQluehd
+
+closed
+```
+
+## Level 16 -> 17
+
+This is similar to the last two levels, except now we're given a range of possible ports that the service may be residing on. We need to first find out which ports are open and then which of those open ports are speaking SSL. We can scan ports using `nmap` (network mapper), a very common tool that is a staple in any hacker's toolbox.
+
+In `nmap`, we can specify a port range using `-p`. We can specify the ports from `31000` to `32000` using `-p31000-32000`. We can additionally get as much information as possible about them using the `-A` (as in all info) flag.
+
+```
+bandit16@bandit:~$ nmap 127.0.0.1 -p31000-32000 -A
+
+Starting Nmap 7.40 ( https://nmap.org ) at 2020-06-11 03:01 CEST
+Nmap scan report for localhost (127.0.0.1)
+Host is up (0.00028s latency).
+Not shown: 996 closed ports
+PORT      STATE SERVICE     VERSION
+31046/tcp open  echo
+31518/tcp open  ssl/echo
+| ssl-cert: Subject: commonName=localhost
+| Subject Alternative Name: DNS:localhost
+| Not valid before: 2020-05-14T12:03:38
+|_Not valid after:  2021-05-14T12:03:38
+|_ssl-date: TLS randomness does not represent time
+31691/tcp open  echo
+31790/tcp open  ssl/unknown
+| fingerprint-strings: 
+|   FourOhFourRequest, GenericLines, GetRequest, HTTPOptions, Help, Kerberos, LDAPSearchReq, LPDString, RTSPRequest, SIPOptions, SSLSessionReq, TLSSessionReq: 
+|_    Wrong! Please enter the correct current password
+| ssl-cert: Subject: commonName=localhost
+| Subject Alternative Name: DNS:localhost
+| Not valid before: 2020-05-14T12:03:38
+|_Not valid after:  2021-05-14T12:03:38
+|_ssl-date: TLS randomness does not represent time
+31960/tcp open  echo
+1 service unrecognized despite returning data. If you know the service/version, please submit the following fingerprint at https://nmap.org/cgi-bin/submit.cgi?new-service :
+SF-Port31790-TCP:V=7.40%T=SSL%I=7%D=6/11%Time=5EE1827C%P=x86_64-pc-linux-g
+SF:nu%r(GenericLines,31,"Wrong!\x20Please\x20enter\x20the\x20correct\x20cu
+SF:rrent\x20password\n")%r(GetRequest,31,"Wrong!\x20Please\x20enter\x20the
+SF:\x20correct\x20current\x20password\n")%r(HTTPOptions,31,"Wrong!\x20Plea
+SF:se\x20enter\x20the\x20correct\x20current\x20password\n")%r(RTSPRequest,
+SF:31,"Wrong!\x20Please\x20enter\x20the\x20correct\x20current\x20password\
+SF:n")%r(Help,31,"Wrong!\x20Please\x20enter\x20the\x20correct\x20current\x
+SF:20password\n")%r(SSLSessionReq,31,"Wrong!\x20Please\x20enter\x20the\x20
+SF:correct\x20current\x20password\n")%r(TLSSessionReq,31,"Wrong!\x20Please
+SF:\x20enter\x20the\x20correct\x20current\x20password\n")%r(Kerberos,31,"W
+SF:rong!\x20Please\x20enter\x20the\x20correct\x20current\x20password\n")%r
+SF:(FourOhFourRequest,31,"Wrong!\x20Please\x20enter\x20the\x20correct\x20c
+SF:urrent\x20password\n")%r(LPDString,31,"Wrong!\x20Please\x20enter\x20the
+SF:\x20correct\x20current\x20password\n")%r(LDAPSearchReq,31,"Wrong!\x20Pl
+SF:ease\x20enter\x20the\x20correct\x20current\x20password\n")%r(SIPOptions
+SF:,31,"Wrong!\x20Please\x20enter\x20the\x20correct\x20current\x20password
+SF:\n");
+
+Service detection performed. Please report any incorrect results at https://nmap.org/submit/ .
+Nmap done: 1 IP address (1 host up) scanned in 89.89 seconds
+```
+
+One of the most valuable skills a hacker can have is filter through a sea of unneeded information to find the relevant information. Here, we see a couple of interesting lines of data.
+
+```
+31046/tcp open  echo
+31518/tcp open  ssl/echo
+31691/tcp open  echo
+31790/tcp open  ssl/unknown
+31960/tcp open  echo
+```
+
+We can see that 5 ports are open, 2 of them are running SSL, and 4 of them are running echo. The only port not running echo is 31790, which is also running SSL. As such, this must be the port on which the service that will give us the password to the next level resides.
+
+```
+bandit16@bandit:~$ openssl s_client -connect 127.0.0.1:31790 -ign_eof < /etc/bandit_pass/bandit16
+-- snipped, a bunch of data --
+Correct!
+-----BEGIN RSA PRIVATE KEY-----
+MIIEogIBAAKCAQEAvmOkuifmMg6HL2YPIOjon6iWfbp7c3jx34YkYWqUH57SUdyJ
+imZzeyGC0gtZPGujUSxiJSWI/oTqexh+cAMTSMlOJf7+BrJObArnxd9Y7YT2bRPQ
+Ja6Lzb558YW3FZl87ORiO+rW4LCDCNd2lUvLE/GL2GWyuKN0K5iCd5TbtJzEkQTu
+DSt2mcNn4rhAL+JFr56o4T6z8WWAW18BR6yGrMq7Q/kALHYW3OekePQAzL0VUYbW
+JGTi65CxbCnzc/w4+mqQyvmzpWtMAzJTzAzQxNbkR2MBGySxDLrjg0LWN6sK7wNX
+x0YVztz/zbIkPjfkU1jHS+9EbVNj+D1XFOJuaQIDAQABAoIBABagpxpM1aoLWfvD
+KHcj10nqcoBc4oE11aFYQwik7xfW+24pRNuDE6SFthOar69jp5RlLwD1NhPx3iBl
+J9nOM8OJ0VToum43UOS8YxF8WwhXriYGnc1sskbwpXOUDc9uX4+UESzH22P29ovd
+d8WErY0gPxun8pbJLmxkAtWNhpMvfe0050vk9TL5wqbu9AlbssgTcCXkMQnPw9nC
+YNN6DDP2lbcBrvgT9YCNL6C+ZKufD52yOQ9qOkwFTEQpjtF4uNtJom+asvlpmS8A
+vLY9r60wYSvmZhNqBUrj7lyCtXMIu1kkd4w7F77k+DjHoAXyxcUp1DGL51sOmama
++TOWWgECgYEA8JtPxP0GRJ+IQkX262jM3dEIkza8ky5moIwUqYdsx0NxHgRRhORT
+8c8hAuRBb2G82so8vUHk/fur85OEfc9TncnCY2crpoqsghifKLxrLgtT+qDpfZnx
+SatLdt8GfQ85yA7hnWWJ2MxF3NaeSDm75Lsm+tBbAiyc9P2jGRNtMSkCgYEAypHd
+HCctNi/FwjulhttFx/rHYKhLidZDFYeiE/v45bN4yFm8x7R/b0iE7KaszX+Exdvt
+SghaTdcG0Knyw1bpJVyusavPzpaJMjdJ6tcFhVAbAjm7enCIvGCSx+X3l5SiWg0A
+R57hJglezIiVjv3aGwHwvlZvtszK6zV6oXFAu0ECgYAbjo46T4hyP5tJi93V5HDi
+Ttiek7xRVxUl+iU7rWkGAXFpMLFteQEsRr7PJ/lemmEY5eTDAFMLy9FL2m9oQWCg
+R8VdwSk8r9FGLS+9aKcV5PI/WEKlwgXinB3OhYimtiG2Cg5JCqIZFHxD6MjEGOiu
+L8ktHMPvodBwNsSBULpG0QKBgBAplTfC1HOnWiMGOU3KPwYWt0O6CdTkmJOmL8Ni
+blh9elyZ9FsGxsgtRBXRsqXuz7wtsQAgLHxbdLq/ZJQ7YfzOKU4ZxEnabvXnvWkU
+YOdjHdSOoKvDQNWu6ucyLRAWFuISeXw9a/9p7ftpxm0TSgyvmfLF2MIAEwyzRqaM
+77pBAoGAMmjmIJdjp+Ez8duyn3ieo36yrttF5NSsJLAbxFpdlc1gvtGCWW+9Cq0b
+dxviW8+TFVEBl1O4f7HVm6EpTscdDxU+bCXWkfjuRb7Dy9GOtt9JPsX8MBTakzh3
+vBgsyi/sN3RqRBcGU40fOoZyfAMT8s1m/uYv52O6IgeuZ/ujbjY=
+-----END RSA PRIVATE KEY-----
+
+closed
+```
+
+Here, we're given an SSH key instead of a password again. Fair enough. We can use regular expressions in `grep` and give it an arbitrary overshot of the amount of lines to include after an initial match using `-A` (after), and then adjust accordingly.
+
+```
+bandit16@bandit:~$ cd $(mktemp -d)
+bandit16@bandit:/tmp/tmp.x8HkE0JRxX$
+bandit16@bandit:/tmp/tmp.x8HkE0JRxX$ openssl s_client -connect 127.0.0.1:31790 -ign_eof < /etc/bandit_pass/bandit16 2>/dev/null | grep "BEGIN RSA" -A 30
+-----BEGIN RSA PRIVATE KEY-----
+MIIEogIBAAKCAQEAvmOkuifmMg6HL2YPIOjon6iWfbp7c3jx34YkYWqUH57SUdyJ
+imZzeyGC0gtZPGujUSxiJSWI/oTqexh+cAMTSMlOJf7+BrJObArnxd9Y7YT2bRPQ
+Ja6Lzb558YW3FZl87ORiO+rW4LCDCNd2lUvLE/GL2GWyuKN0K5iCd5TbtJzEkQTu
+DSt2mcNn4rhAL+JFr56o4T6z8WWAW18BR6yGrMq7Q/kALHYW3OekePQAzL0VUYbW
+JGTi65CxbCnzc/w4+mqQyvmzpWtMAzJTzAzQxNbkR2MBGySxDLrjg0LWN6sK7wNX
+x0YVztz/zbIkPjfkU1jHS+9EbVNj+D1XFOJuaQIDAQABAoIBABagpxpM1aoLWfvD
+KHcj10nqcoBc4oE11aFYQwik7xfW+24pRNuDE6SFthOar69jp5RlLwD1NhPx3iBl
+J9nOM8OJ0VToum43UOS8YxF8WwhXriYGnc1sskbwpXOUDc9uX4+UESzH22P29ovd
+d8WErY0gPxun8pbJLmxkAtWNhpMvfe0050vk9TL5wqbu9AlbssgTcCXkMQnPw9nC
+YNN6DDP2lbcBrvgT9YCNL6C+ZKufD52yOQ9qOkwFTEQpjtF4uNtJom+asvlpmS8A
+vLY9r60wYSvmZhNqBUrj7lyCtXMIu1kkd4w7F77k+DjHoAXyxcUp1DGL51sOmama
++TOWWgECgYEA8JtPxP0GRJ+IQkX262jM3dEIkza8ky5moIwUqYdsx0NxHgRRhORT
+8c8hAuRBb2G82so8vUHk/fur85OEfc9TncnCY2crpoqsghifKLxrLgtT+qDpfZnx
+SatLdt8GfQ85yA7hnWWJ2MxF3NaeSDm75Lsm+tBbAiyc9P2jGRNtMSkCgYEAypHd
+HCctNi/FwjulhttFx/rHYKhLidZDFYeiE/v45bN4yFm8x7R/b0iE7KaszX+Exdvt
+SghaTdcG0Knyw1bpJVyusavPzpaJMjdJ6tcFhVAbAjm7enCIvGCSx+X3l5SiWg0A
+R57hJglezIiVjv3aGwHwvlZvtszK6zV6oXFAu0ECgYAbjo46T4hyP5tJi93V5HDi
+Ttiek7xRVxUl+iU7rWkGAXFpMLFteQEsRr7PJ/lemmEY5eTDAFMLy9FL2m9oQWCg
+R8VdwSk8r9FGLS+9aKcV5PI/WEKlwgXinB3OhYimtiG2Cg5JCqIZFHxD6MjEGOiu
+L8ktHMPvodBwNsSBULpG0QKBgBAplTfC1HOnWiMGOU3KPwYWt0O6CdTkmJOmL8Ni
+blh9elyZ9FsGxsgtRBXRsqXuz7wtsQAgLHxbdLq/ZJQ7YfzOKU4ZxEnabvXnvWkU
+YOdjHdSOoKvDQNWu6ucyLRAWFuISeXw9a/9p7ftpxm0TSgyvmfLF2MIAEwyzRqaM
+77pBAoGAMmjmIJdjp+Ez8duyn3ieo36yrttF5NSsJLAbxFpdlc1gvtGCWW+9Cq0b
+dxviW8+TFVEBl1O4f7HVm6EpTscdDxU+bCXWkfjuRb7Dy9GOtt9JPsX8MBTakzh3
+vBgsyi/sN3RqRBcGU40fOoZyfAMT8s1m/uYv52O6IgeuZ/ujbjY=
+-----END RSA PRIVATE KEY-----
+
+closed
+```
+
+Looks like my arbitrary guess of 30 was off by a bit. We'd be easily deceived into thinking that the actual number of lines to include after is 28 since we have 2 extra lines, but remember that we could give it 100 lines after and it would still give us the same result since all lines after the EOF are nonexistent. The actual number of lines needed to get from the beginning of the initial `grep` match to the end of the RSA key is in fact 26. We can then redirect that into a file.
+
+```
+bandit16@bandit:/tmp/tmp.x8HkE0JRxX$ openssl s_client -connect 127.0.0.1:31790 -ign_eof < /etc/bandit_pass/bandit16 2>/dev/null | grep "BEGIN RSA" -A 26 > ssh.key
+```
+
+Due to the nature of SSH keys, we also need to adjust their mode to be private and readable only by our own user in order to be accepted by `ssh`. We can change their access modes using `chmod` (change mode). The desired mode here is `600`, which means read and write capable for the user, and nothing else for the group or other. You can learn more about Linux modes [here](https://en.wikipedia.org/wiki/Modes_(Unix)).
+
+```
+bandit16@bandit:/tmp/tmp.x8HkE0JRxX$ chmod 600 ssh.key
+bandit16@bandit:/tmp/tmp.x8HkE0JRxX$ ssh -i ssh.key bandit17@127.0.0.1
+```
+
+## Level 17 -> 18
+
+We're given two files, `passwords.old` and `passwords.new`, and the password to the next level is the only difference between the two. We can get differences between files using the `diff` (difference) utility. Here, we want to say that we want the differences between `passwords.old` and `passwords.new`, which we can simplify to just `passwords.*` using the `*` wildcard which should be very familiar by now.
+
+```
+bandit17@bandit:~$ diff passwords.*
+42c42
+< kfBf3eYk5BPBRzwjqutbbfE887SVc5Yd
+---
+> w0Yfolrc5bwjS4qw5mq1nnQi6mF03bii
+```
+
+We can see that `kfBf3eYk5BPBRzwjqutbbfE887SVc5Yd` is inserted and `w0Yfolrc5bwjS4qw5mq1nnQi6mF03bii` is removed. Therefore, `kfBf3eYk5BPBRzwjqutbbfE887SVc5Yd` is the new difference between the two files and is the password to the next level.
+
+## Level 18 -> 19
+
+In this level, we're automatically logged out after connecting to SSH due to a modification in the `.bashrc` file. This is simple enough. We don't actually need to use an interactive and fully-fledged shell in order to execute commands through SSH. We can instead just give the command we'd like to execute directly after `ssh`. Because the `.bashrc` file has been modified, let's run `/bin/sh` to run a basic (non-Bash) shell.
+
+```
+bandit17@bandit:~$ ssh bandit18@127.0.0.1 /bin/sh
+-- snipped, a bunch of data --
+bandit18@127.0.0.1's password: 
+whoami
+bandit18
+```
+
+As we can see, we now have a basic shell and we can execute commands. Let's `cat` that `readme` file now.
+
+```
+ls
+readme
+cat readme
+IueksS7Ubh8G3DCwVzrTd8rAVOwq3M5x
+```
+
+## Level 19 -> 20
+
+We have a SUID (set-UID) binary in the home directory that we can interact with. This looks like our first privilege escalation challenge! We can run binaries by invoking them from their path (e.g. `./bandit20-do` if we're in the same directory). Let's see what we're dealing with.
+
+```
+bandit19@bandit:~$ ls
+bandit20-do
+bandit19@bandit:~$ ./bandit20-do 
+Run a command as another user.
+  Example: ./bandit20-do id
+```
+
+It looks like this allows us to run a command as the user `bandit20`. Let's run the `whois` command through this binary to confirm that we will indeed be executing commands as the user `bandit20`.
+
+```
+bandit19@bandit:~$ ./bandit20-do whoami
+bandit20
+```
+
+Yup, we've successfully escalated our privileges to another user! Let's go ahead and pop a shell and get the password.
+
+```
+bandit19@bandit:~$ ./bandit20-do /bin/sh
+$ cat /etc/bandit_pass/bandit20
+GbKksEFF4yrVs6il55v6gwY5aVje5f0j
+```
+
+## Level 20 -> 21
