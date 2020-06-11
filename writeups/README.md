@@ -4,7 +4,13 @@ This directory contains CTF writeups. Some of these writeups are for challenges 
 
 ## Beginners' Recommended Reading List
 
-For beginners, it is recommended that you read (and do) these CTFs in this order:
+For beginners, it is recommended that you read (and try) these CTFs:
+
+| Name                                         | Description                                                      |
+| -------------------------------------------- | ---------------------------------------------------------------- |
+| [OverTheWire Bandit](./active/otw-bandit.md) | A beginner level wargame meant to teach a bunch of Linux basics. |
+
+## Full Catalog
 
 | Name                                         | Description                                                      |
 | -------------------------------------------- | ---------------------------------------------------------------- |
