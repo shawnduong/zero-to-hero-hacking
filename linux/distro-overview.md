@@ -24,7 +24,7 @@ By default, Arch Linux does not come with a prepackaged window manager or deskto
 
 Arch Linux operates on a rolling release model. This means that the latest updates are always available to the user to be installed *at their own discretion.* By default, packages are managed using pacman (package manager) and can be installed from either the official Arch Linux Repositories or from the Arch User Repositories.
 
-Arch Linux excels most at being a personal operating system for GNU/Linux users who want to tailor their operating system for their own tastes and purposes.
+**Arch Linux excels most at being a personal operating system for GNU/Linux users who want to tailor their operating system for their own tastes and purposes.**
 
 ## Red Hat Enterprise Linux
 
