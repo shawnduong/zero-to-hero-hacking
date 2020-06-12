@@ -14,6 +14,7 @@ This repository is split into a couple of different directories:
 | [forensics](./forensics/) | Digital forensics articles.           |
 | [linux](./linux/)         | Linux articles.                       |
 | [network](./network/)     | Networking articles.                  |
+| [opsec](./opsec/)         | Operations security articles.         |
 | [osint](./osint/)         | Open-source intelligence articles.    |
 | [re](./re/)               | Reverse engineering articles.         |
 | [webex](./webex/)         | Web exploitation articles.            |
