@@ -4,6 +4,7 @@ This directory contains articles related to Linux. Linux is a free/libre and ope
 
 ## Full Catalog
 
-| Name                                         | Description                                                      |
-| -------------------------------------------- | ---------------------------------------------------------------- |
-| [Distro Overview](./distro-overview.md)      | An overview of common Linux distributions.                       |
+| Name                                            | Description                                                      |
+| ----------------------------------------------- | ---------------------------------------------------------------- |
+| [Command Line Basics](./command-line-basics.md) | The basics of the Linux command line.                            |
+| [Distro Overview](./distro-overview.md)         | An overview of common Linux distributions.                       |
