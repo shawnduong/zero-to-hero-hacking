@@ -10,3 +10,4 @@ This directory contains articles related to Linux. Linux is a free/libre and ope
 | [Commands to Know](./commands-to-know.md)                                   | Some basic commands as well as how to use them.                  |
 | [Distro Overview](./distro-overview.md)                                     | An overview of common Linux distributions.                       |
 | [The Filesystem Hierarchy Standard](./the-filesystem-hierarchy-standard.md) | The standard for Linux directories explained.                    |
+| [Permissions and Modes](./permissions-and-modes.md)                         | Permissions and modes on a Linux system explained.               |
