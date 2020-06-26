@@ -4,8 +4,9 @@ This directory contains articles related to Linux. Linux is a free/libre and ope
 
 ## Full Catalog
 
-| Name                                            | Description                                                      |
-| ----------------------------------------------- | ---------------------------------------------------------------- |
-| [Command Line Basics](./command-line-basics.md) | The basics of the Linux command line.                            |
-| [Commands to Know](./commands-to-know.md)       | Some basic commands as well as how to use them.                  |
-| [Distro Overview](./distro-overview.md)         | An overview of common Linux distributions.                       |
+| Name                                                                        | Description                                                      |
+| --------------------------------------------------------------------------- | ---------------------------------------------------------------- |
+| [Command Line Basics](./command-line-basics.md)                             | The basics of the Linux command line.                            |
+| [Commands to Know](./commands-to-know.md)                                   | Some basic commands as well as how to use them.                  |
+| [Distro Overview](./distro-overview.md)                                     | An overview of common Linux distributions.                       |
+| [The Filesystem Hierarchy Standard](./the-filesystem-hierarchy-standard.md) | The standard for Linux directories explained.                    |
