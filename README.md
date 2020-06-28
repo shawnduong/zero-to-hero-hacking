@@ -13,6 +13,7 @@ This repository is split into a couple of different directories:
 | [crypto](./crypto/)       | Cryptography articles.                |
 | [forensics](./forensics/) | Digital forensics articles.           |
 | [linux](./linux/)         | Linux articles.                       |
+| [malware](./malware/)     | Malware articles.                     |
 | [misc](./misc)            | Miscellaneous articles.               |
 | [network](./network/)     | Networking articles.                  |
 | [opsec](./opsec/)         | Operations security articles.         |
