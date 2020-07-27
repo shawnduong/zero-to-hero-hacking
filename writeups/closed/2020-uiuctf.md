@@ -346,6 +346,8 @@ We will once again substitute this result into our original equation for x. If x
 
 Our desired answer, x = 26734, appears when l = 10. The math once again checks out!
 
+I understand that reading math might be a bit difficult, so I went ahead and recorded this video to help you see the Chinese remainder theorem in action: [YouTube](https://www.youtube.com/watch?v=lw-oBDiBleI)
+
 Going back to the challenge now, we simply just apply this same procedure to larger numbers. It's very easy to just use an online calculator like [this one](https://comnuan.com/cmnn02/cmnn0200a/cmnn0200a.php), but I highly recommend anyone reading this to try to understand the math because it truly is very neat!
 
 For the record, the flag was `uiuctf{small_oysters_expire_quick}`. This was a very fun challenge and I learned something new!
