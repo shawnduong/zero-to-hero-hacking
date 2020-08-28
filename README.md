@@ -1,3 +1,7 @@
+# NOTICE
+
+This project is currently in slowmode. My college classes have started again. Updates to this repository will still come when I have free time.
+
 # Zero to Hero Hacking
 
 This repository is a comprehensive guide to computer hacking featuring CTF writeups as well as general information and tutorials for common tools, techniques, protocols, and the like. This repository is maintained by Shawn Duong and is a "live" repository, meaning that it will be continually updated. If an article is out of date then please submit an issue and it will be resolved.
