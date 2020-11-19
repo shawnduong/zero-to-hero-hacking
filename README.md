@@ -46,7 +46,7 @@ As a beginner, it's very easy to get intimidated! Remember that many of us in th
 
 ## About the Author
 
-My name is Shawn Duong and I actively maintain this project. I've been hacking since 2015 and capturing flags since 2017. In 2018 I founded Team IrisCS and in 2020 I joined ACM UC Merced's premier CTF team. I'm a student at the University of California, Merced majoring in Computer Science and Engineering and currently employed by the UC's IT Network and Extension departments. I am expected to receive my Bachelor of Science by 2023. My specializations are digital forensics and systems exploitation.
+My name is Shawn Kathleen "skat" Duong and I maintain this project. You can learn more about me on my [personal website](http://shawnd.xyz/) or on my [hacking club's website](https://irissec.xyz/members/skat).
 
 I am reachable via GitHub for regular correspondences or via email for urgent correspondences. Both of these can be found [here](https://github.com/shawnduong). I will typically respond within 7 days at most, often times much earlier. **Any and all concerns related to this project should first and foremost consider being filed as an issue.**
 
