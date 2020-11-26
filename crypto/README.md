@@ -8,5 +8,6 @@ As a sidenote, there is some debate over whether or not steganography is conside
 
 | Name                                         | Description                                                      |
 | -------------------------------------------- | ---------------------------------------------------------------- |
+| [Common Bases](./common-bases.md)            | A quick guide to common number bases for data.                   |
 | [rot13](./rot13.md)                          | A simple cipher in which characters are shifted 13 spaces.       |
 | [RSA](./rsa.md)                              | A sophisticated public-private key cryptosystem.                 |
