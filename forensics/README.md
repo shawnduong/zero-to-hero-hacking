@@ -6,6 +6,7 @@ As a sidenote, there is some debate over whether or not steganography is conside
 
 ## Full Catalog
 
-| Name                         | Description                                                            |
-| ---------------------------- | ---------------------------------------------------------------------- |
-| [EXIF Data](./exif-data.md)  | A guide to understanding EXIF data and using it for digital forensics. |
+| Name                                                   | Description                                                                     |
+| ------------------------------------------------------ | ------------------------------------------------------------------------------- |
+| [Analyzing Memory Dumps](./analyzing-memory-dumps.md)  | Learn how to analyze memory dumps as part of a digital forensics investigation. |
+| [EXIF Data](./exif-data.md)                            | A guide to understanding EXIF data and using it for digital forensics.          |
