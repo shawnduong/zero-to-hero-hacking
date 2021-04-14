@@ -109,7 +109,7 @@ Note that this is an incomplete list and only highlights the most commonly used 
 | Symbol   | Meaning                                  |
 | -------- | ---------------------------------------- |
 | `.`      | Any character except `\n`.               |
-| `(a|b)`  | Either a or b.                           |
+| `(a\|b)`  | Either a or b.                          |
 | `[abc]`  | Either the single characters a, b, or c. |
 | `[^abc]` | Any single character but a, b, or c.     |
 | `[A-Z]`  | Any single character from A to Z.        |
