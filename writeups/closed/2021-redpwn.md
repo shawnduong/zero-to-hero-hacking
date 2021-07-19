@@ -1,6 +1,6 @@
 # redpwn 2021
 
-*This writeup is also readable on my [personal website](https://shawnd.xyz/blog/2021-07-15/Executing-a-Textbook-ret2libc-Attack-to-Pop-a-Shell) and [team website](https://irissec.xyz/articles/categories/pwn/2021-07-18/Executing-a-Textbook-ret2libc-Attack-to-Pop-a-Shell).*
+*This writeup is also readable on my [personal website](https://shawnd.xyz/blog/2021-07-15/Executing-a-Textbook-ret2libc-Attack-to-Pop-a-Shell) and [team website](https://irissec.xyz/articles/categories/binex/2021-07-18/Executing-a-Textbook-ret2libc-Attack-to-Pop-a-Shell).*
 
 It's been a while since I've written a CTF writeup! I've been very busy with school and work for the past year or so, and so my writeup authoring skills may be a bit rusty.
 
