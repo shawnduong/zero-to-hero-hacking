@@ -16,4 +16,5 @@ For beginners, it is recommended that you read (and try) these CTFs:
 | -------------------------------------------- | ---------------------------------------------------------------- |
 | [OverTheWire Bandit](./active/otw-bandit.md) | A beginner level wargame meant to teach a bunch of Linux basics. |
 | [redpwn 2020](./closed/2020-redpwn.md)       | redpwn 2020 writeups.                                            |
+| [redpwn 2021](./closed/2021-redpwn.md)       | redpwn 2021 writeups.                                            |
 | [UIUCTF 2020](./closed/2020-uiuctf.md)       | UIUCTF 2020 writeups.                                            |
