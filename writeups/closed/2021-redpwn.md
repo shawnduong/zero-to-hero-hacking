@@ -103,7 +103,7 @@ Starting off with part 0, you can easily find gadgets using a tool like `ropper`
 
 ![](./images/2021-redpwn/img03.png)
 
-Now we know that there's a `pop rdi; ret;` at `0x023a5f`. Note that this was found in the given static libc file, meaning that it hasn't been loaded yet. This is why it's so important to calculate the base address of the **loaded** libc in the program. `0x023a5f` here is essentially the offset of the gadget, so to find the address of the game gadget in the running program, we just add it to the loaded libc's base address.
+Now we know that there's a `pop rdi; ret;` at `0x023a5f`. Note that this was found in the given static libc file, meaning that it hasn't been loaded yet. This is why it's so important to calculate the base address of the **loaded** libc in the program. `0x023a5f` here is essentially the offset of the gadget, so to find the address of the same gadget in the running program, we just add it to the loaded libc's base address.
 
 The entire exploit can be easily scripted in Python with pwntools.
 
