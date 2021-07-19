@@ -46,7 +46,7 @@ As a beginner, it's very easy to get intimidated! Remember that many of us in th
 
 ## About the Author
 
-My name is Shawn Kathleen "skat" Duong and I maintain this project. You can learn more about me on my [personal website](http://shawnd.xyz/) or on my [hacking club's website](https://irissec.xyz/members/skat).
+My name is Shawn Kathleen "skat" Duong and I maintain this project. You can learn more about me on my [personal website](https://shawnd.xyz/) or on my [hacking club's website](https://irissec.xyz/members/skat).
 
 I am reachable via GitHub for regular correspondences or via email for urgent correspondences. Both of these can be found [here](https://github.com/shawnduong). I will typically respond within 7 days at most, often times much earlier. **Any and all concerns related to this project should first and foremost consider being filed as an issue.**
 
