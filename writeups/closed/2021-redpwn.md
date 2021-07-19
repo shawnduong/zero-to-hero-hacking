@@ -17,7 +17,16 @@ All files can be found in the [redpwn directory](./files/2021-redpwn/).
 > hey, my company sponsored map doesn't show any location named "libc"! \
 > `nc mc.ax 31568`
 
-Files: `ret2the-unknown.c`, `ld-2.28.so`, `ret2the-unknown`, `libc-2.28.so`
+Files: `ld-2.28.so`, `libc-2.28.so`, `ret2the-unknown`, `ret2the-unknown.c`
+
+Checksums (SHA-1):
+
+```
+4196dfaca4fc796710efd3dd37bd8f5c8010b11d  ld-2.28.so
+13d8d9f665c1f3a087e366e9092c112a0b8e100f  libc-2.28.so
+4be711c76823689dc21689f7d7324b048b978153  ret2the-unknown
+4d1b7852d772135c17e573cd6aeb4cad434a0f30  ret2the-unknown.c
+```
 
 This is a textbook ret2libc challenge without much else going on, and thus a great opportunity for me to explain ret2libc attacks!
 
