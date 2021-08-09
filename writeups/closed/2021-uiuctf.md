@@ -1015,10 +1015,7 @@ Before continuing, let me first introduce the idea of least significant bit (LSB
 
 A digital image may contain up to 4 color planes: red, green, blue, and alpha (transparency), each able to express their own intensities using 8 bits; 0 is low-intensity and 255 is high-intensity, with 0 and 255 respectively being the minimum and maximum values that can be represented with 8 bits. Combinations of these color planes can express up to 16,777,216 colors plus transparency. Here's what (R,G,B,A) = (255, 0, 255, 255) looks like, for instance:
 
-<center>
-	<div style="height: 50px; width: 50px; background-color: #FF00FFFF"></div>
-</center>
-<br>
+![](./images/2021-uiuctf/01/fig00.png)
 
 The working principle behind LSB steganography is that the human eye cannot detect extremely small changes in color. Here are two colors that differ by only one bit in each color plane, excluding the alpha plane:
 
@@ -1028,20 +1025,13 @@ R   G   B   A
 254 66  129 255  Right
 ```
 
-<center>
-	<div style="height: 50px; width: 50px; background-color: #FF4380FF; display: inline-block"></div>
-	<div style="height: 50px; width: 50px; background-color: #FE4281FF; display: inline-block"></div>
-</center>
-<br>
+![](./images/2021-uiuctf/01/fig01.png)
 
 I couldn't tell the difference -- could you? This flaw of our cognitive limitations allows a unique exploit targeting our biology itself: data can be steganographically embedded in the least significant bits of color planes in consecutive pixels of an image while simultaneously having a virtually perfectly invisible effect on the image itself. Even if a person were to have some sort of superhuman cognition and be able to accurately tell the difference between two minutely different colors, they would only be able to determine the differences if they had both the original and altered image. What we need is a computer -- which sees color not as a perception and effect of biology, but as ones and zeroes -- to extract the data from the least significant bits.
 
 The following colors encode the ASCII letter "A" in their least significant bits, excluding the alpha channel:
 
-<center>
-	<div style="height: 50px; width: 50px; background-color: #FEFFFEFF; display: inline-block"></div><div style="height: 50px; width: 50px; background-color: #FEFEFEFF; display: inline-block"></div><div style="height: 50px; width: 50px; background-color: #FEFFFFFF; display: inline-block"></div>
-</center>
-<br>
+![](./images/2021-uiuctf/01/fig02.png)
 
 It looks like nothing but a white strip, but closer inspection of the individual colors reveals the message:
 
