@@ -1286,12 +1286,7 @@ Well that seems disappointing at first glance, but closer inspection of the file
 00000090: 0000 0000 0000 0000 0000 0000 0000 0000  ................
 ```
 
-The "vbox" string would suggest some kind of virtualization going on with VirtualBox, and the "conectix" stumped me for a little bit until I stumbled on [this Wikipedia article.](https://web.archive.org/web/20210731052020/https://en.wikipedia.org/wiki/Windows_Virtual_PC) The moment I saw that Microsoft was involved, I grew a few grey hairs. To put simply:
-
-<center>
-	<iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/RZ5DgkoLuGI" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
-</center>
-<br>
+The "vbox" string would suggest some kind of virtualization going on with VirtualBox, and the "conectix" stumped me for a little bit until I stumbled on [this Wikipedia article.](https://web.archive.org/web/20210731052020/https://en.wikipedia.org/wiki/Windows_Virtual_PC) The moment I saw that Microsoft was involved, I grew a few grey hairs. To put simply: [uh oh](https://www.youtube.com/watch?v=RZ5DgkoLuGI).
 
 I sent it to the rest of the team so that we could have some more hands on deck:
 
