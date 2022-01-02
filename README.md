@@ -1,6 +1,6 @@
 # NOTICE
 
-This project is currently in slowmode. My college classes have started again. Updates to this repository will still come when I have free time.
+This project is booting back up. I'm currently working on this again to pass the time while sick and quarantined. Stay safe and stay healthy!
 
 # Zero to Hero Hacking
 
@@ -52,4 +52,4 @@ I am reachable via GitHub for regular correspondences or via email for urgent co
 
 ## About Contributing
 
-There are a variety of ways that you can contribute to this project. If you would like to write articles, submit proofreads and/or revisions, or contribute in some other direct manner, please follow this [guide](https://akrabat.com/the-beginners-guide-to-contributing-to-a-github-project/). If you would like to contribute indirectly by notifying me of proofreads, outdated methods and techniques, broken links, etc. then please submit an issue and it will be resolved.
+A contribution guide is currently in the works.
