@@ -50,6 +50,6 @@ My name is Shawn Kathleen "skat" Duong and I maintain this project. You can lear
 
 I am reachable via GitHub for regular correspondences or via email for urgent correspondences. Both of these can be found [here](https://github.com/shawnduong). I will typically respond within 7 days at most, often times much earlier. **Any and all concerns related to this project should first and foremost consider being filed as an issue.**
 
-## About Contributing
+## Contributing
 
-A contribution guide is currently in the works.
+This project is not currently accepting guest articles. If you would like to contribute, the best way to help out the project is to submit issues for grammatical or spelling errors, factual errors, and the like.
