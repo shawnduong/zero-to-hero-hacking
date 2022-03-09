@@ -1,6 +1,6 @@
 # NOTICE
 
-This project is booting back up. I'm currently working on this again to pass the time while sick and quarantined. Stay safe and stay healthy!
+This project is currently in slowmode. My college classes have started again. Updates to this repository will still come when I have free time.
 
 # Zero to Hero Hacking
 
