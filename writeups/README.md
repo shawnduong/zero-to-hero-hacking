@@ -21,3 +21,4 @@ For beginners, it is recommended that you read (and try) these CTFs:
 | [UIUCTF 2021](./closed/2021-uiuctf.md)             | UIUCTF 2021 writeups.                                            |
 | [X-MAS CTF 2021](./closed/2021-xmas.md)            | X-MAS CTF 2021 writeups.                                         |
 | [ImaginaryCTF 2022](./closed/2022-imaginaryctf.md) | ImaginaryCTF 2022 writeups.                                      |
+| [UIUCTF 2022](./closed/2022-uiuctf.md)             | UIUCTF 2022 writeups.                                            |
